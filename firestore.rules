@@ -1,0 +1,80 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ============================
+    // Reglas para 'citas'
+    // ============================
+    match /citas/{citaId} {
+      allow read: if true;
+      allow create: if request.auth != null &&
+                    request.resource.data.uidPaciente == request.auth.uid;
+      allow update, delete: if request.auth != null &&
+                            resource.data.uidPaciente == request.auth.uid;
+    }
+
+    // ============================
+    // Reglas para 'resultadosMedicos'
+    // ============================
+    match /resultadosMedicos/{resultadoId} {
+      allow read: if request.auth != null;
+      allow get: if request.auth != null &&
+                  resource.data.uidPaciente == request.auth.uid;
+    }
+
+    // ============================
+    // Reglas para 'onlineAgent'
+    // ============================
+    match /onlineAgent/{agentId} {
+      allow read: if request.auth != null && request.auth.uid == agentId;
+      allow create: if request.auth != null && request.auth.uid == agentId;
+      allow update, delete: if request.auth != null && request.auth.uid == agentId;
+    }
+
+    // ============================
+    // Reglas para 'roles'
+    // ============================
+    match /roles/{roleId} {
+      allow read: if request.auth != null;
+      allow create, update, delete: if request.auth != null && request.auth.uid == roleId;
+    }
+
+    // ============================
+    // Reglas para 'agentes'
+    // ============================
+    match /agentes/{agentId} {
+      // Permite a cualquier usuario autenticado leer datos del agente
+      allow read: if request.auth != null;
+      // Por defecto, escritura bloqueada
+      allow create, update, delete: if false;
+
+      // --- Agregar reglas para la subcolección "citasRecibidas" ---
+      match /citasRecibidas/{citaId} {
+        // Permite al agente (usuario autenticado) leer solo sus propias citas recibidas
+        allow read: if request.auth != null && request.auth.uid == agentId;
+        // Permite crear citas recibidas únicamente si el usuario autenticado es el agente
+        allow create: if request.auth != null && request.auth.uid == agentId;
+        // Permite actualizaciones y borrado solo si el usuario autenticado es el agente
+        allow update, delete: if request.auth != null && request.auth.uid == agentId;
+      }
+    }
+
+    // ============================
+    // Reglas para 'notificaciones'
+    // ============================
+    match /notificaciones/{notificacionId} {
+      allow read: if request.auth != null && 
+                 resource.data.uidUsuario == request.auth.uid;
+      allow create: if request.auth != null &&
+                  request.resource.data.uidUsuario == request.auth.uid;
+      allow update, delete: if request.auth != null &&
+                           resource.data.uidUsuario == request.auth.uid;
+    }
+
+    // Negar todo lo demás (mantener esta regla al final)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
