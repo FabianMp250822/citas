@@ -35,7 +35,7 @@ const LoginPage = () => {
                   <circle cx="604" cy="565" r="404" fill="url(#paint0_radial_4801_13605)" />
                 </g>
                 <defs>
-                  <filter id="filter0_f_4801_13605" x="0" y="-39" width="1208" height="1208" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                <filter id="filter0_f_4801_13605" x="0" y="-39" width="1208" height="1208" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
                     <feFlood flood-opacity="0" result="BackgroundImageFix" />
                     <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
                     <feGaussianBlur stdDeviation="100" result="effect1_foregroundBlur_4801_13605" />
