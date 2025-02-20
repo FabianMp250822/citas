@@ -62,21 +62,12 @@ const LoginPage = () => {
                 </svg>
 
                 <div className="text-2xl lg:text-3xl xl:text-5xl font-semibold text-primary-foreground rtl:pr-12">
-                  What’s Our <span className="xl:block"></span>
-                  Clients Say...
+                  Bienvenido a SIAH <span className="xl:block"></span>
+                  Sistema Integrado de Agendamiento y <span className="xl:block"></span>
+                  Historia Clínica de la Costa
                 </div>
 
-                <div className="text-xl  mt-2 text-primary-foreground flex gap-1">
-                  <span>
-                    <Icon
-                      icon="bi:quote"
-                      className="text-primary-foreground text-2xl"
-                    />
-                  </span>
-                  DashTail is awesome friendly Admin Dashboard Template. If you
-                  manage your business in online then “DashTail” is for you. Buy
-                  Now & make user friendly your business today...
-                </div>
+               
 
                 <div className="bg-card overflow-hidden w-full  rounded-3xl rounded-tr-none  relative mt-11 pt-8 pb-7 pl-4">
                   <div className="h-[72px] w-[72px] rounded-full  bg-background flex justify-center items-center absolute right-0 top-0 z-10">
@@ -117,52 +108,20 @@ const LoginPage = () => {
                     >
                       <SwiperSlide>
                         <div className="ltr:pl-4 rtl:pr-8 pb-10">
-                          <div className="text-lg lg:text-xl  font-semibold text-default-900 pr-10">
-                            Prantik Chakraborty <br />
-                            <span className="text-base font-medium text-default-700">
-                              {" "}
-                              UI/UX Designer at Codeshaper
-                            </span>
-                          </div>
-                          <div className="text-lg  text-default-800 mt-4">
-                            The key metric of whether you've succeeded is what
-                            fraction of your employees use that dashboard
-                            everyday.
-                          </div>
-                        </div>
-                      </SwiperSlide>
-                      <SwiperSlide>
-                        <div className="ltr:pl-4 rtl:pr-8 pb-10">
                           <div className="text-lg lg:text-xl  font-semibold text-default-900 pr-10 ">
-                            Prantik Chakraborty <br />
+                            María Sánchez <br />
                             <span className="text-base font-medium text-default-700">
                               {" "}
-                              UI/UX Designer at Codeshaper
+                              Recepcionista en la Clínica de la Costa
                             </span>
                           </div>
                           <div className="text-lg  text-default-800 mt-4">
-                            The key metric of whether you've succeeded is what
-                            fraction of your employees use that dashboard
-                            everyday.
+                            SIAH nos permite agilizar el proceso de agendamiento y mantener la información de los pacientes organizada y accesible.
                           </div>
                         </div>
                       </SwiperSlide>
-                      <SwiperSlide>
-                        <div className="ltr:pl-4 rtl:pr-8  pb-10">
-                          <div className="text-lg lg:text-xl  font-semibold text-default-900 pr-10 ">
-                            Prantik Chakraborty <br />
-                            <span className="text-base font-medium text-default-700">
-                              {" "}
-                              UI/UX Designer at Codeshaper
-                            </span>
-                          </div>
-                          <div className="text-lg  text-default-800 mt-4">
-                            The key metric of whether you've succeeded is what
-                            fraction of your employees use that dashboard
-                            everyday.
-                          </div>
-                        </div>
-                      </SwiperSlide>
+                      
+                      
                     </Swiper>
                   </div>
                 </div>

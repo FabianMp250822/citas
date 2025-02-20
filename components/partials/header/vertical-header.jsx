@@ -3,14 +3,17 @@ import { useSidebar, useThemeStore } from "@/store";
 import { cn } from "@/lib/utils";
 import { Icon } from "@iconify/react";
 import { Search } from "lucide-react";
-import { SiteLogo } from "@/components/svg";
 import Link from "next/link";
+import Image from "next/image";
 import { useMediaQuery } from "@/hooks/use-media-query";
+
+// Importa la imagen del logo desde la ruta indicada
+import logo from "@/public/images/auth/logo.png";
 
 const MenuBar = ({ collapsed, setCollapsed }) => {
   return (
     <button
-      className="relative group  disabled:cursor-not-allowed opacity-50"
+      className="relative group disabled:cursor-not-allowed opacity-50"
       onClick={() => setCollapsed(!collapsed)}
     >
       <div>
@@ -63,40 +66,43 @@ const VerticalHeader = ({ handleOpenSearch }) => {
   let menuBarContent = null;
   let searchButtonContent = null;
 
+  // Usamos Next/Image para renderizar el logo
   const MainLogo = (
-    <Link href="/dashboard" className=" text-primary ">
-      <SiteLogo className="h-7 w-7" />
+    <Link href="/dashboard" className="text-primary">
+      <Image
+        src={logo}
+        alt="Logo"
+        width={28}
+        height={28}
+        className="h-7 w-7 object-contain"
+      />
     </Link>
   );
   const SearchButton = (
     <div>
       <button
-        className=" inline-flex  gap-2 items-center text-default-600 text-sm"
+        className="inline-flex gap-2 items-center text-default-600 text-sm"
         onClick={handleOpenSearch}
       >
         <span>
-          <Search className=" h-4 w-4" />
+          <Search className="h-4 w-4" />
         </span>
-        <span className=" md:block hidden"> Search...</span>
+        <span className="md:block hidden"> Search...</span>
       </button>
     </div>
   );
+
   if (layout === "semibox" && !isDesktop) {
     LogoContent = MainLogo;
   }
-  if (
-    layout === "vertical" &&
-    !isDesktop &&
-    isMobile &&
-    sidebarType === "module"
-  ) {
+  if (layout === "vertical" && !isDesktop && isMobile && sidebarType === "module") {
     LogoContent = MainLogo;
   }
   if (layout === "vertical" && !isDesktop && sidebarType !== "module") {
     LogoContent = MainLogo;
   }
 
-  // menu bar content condition
+  // Condiciones para mostrar el menu bar
   if (isDesktop && sidebarType !== "module") {
     menuBarContent = (
       <MenuBar collapsed={collapsed} setCollapsed={setCollapsed} />
@@ -119,14 +125,13 @@ const VerticalHeader = ({ handleOpenSearch }) => {
   if (sidebarType === "classic" || sidebarType === "popover") {
     searchButtonContent = SearchButton;
   }
+
   return (
-    <>
-      <div className="flex items-center md:gap-6 gap-3">
-        {LogoContent}
-        {menuBarContent}
-        {searchButtonContent}
-      </div>
-    </>
+    <div className="flex items-center md:gap-6 gap-3">
+      {LogoContent}
+      {menuBarContent}
+      {searchButtonContent}
+    </div>
   );
 };
 

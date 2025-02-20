@@ -445,7 +445,7 @@ export default LoginPage;
 //                     <Icon icon="bi:quote" className="text-primary-foreground text-2xl" />
 //                   </span>
 
-//                   DashTail is awesome friendly Admin Dashboard Template. If you manage your business in online then “DashTail” is for you. Buy Now & make user friendly your business today...
+//                   DashTail 2222 is awesome friendly Admin Dashboard Template. If you manage your business in online then “DashTail” is for you. Buy Now & make user friendly your business today...
 //                 </div>
 
 //                 <div className="bg-card overflow-hidden w-full pt-10 pb-6 pl-5  pr-12  mt-8 rounded-3xl rounded-tr-none relative">

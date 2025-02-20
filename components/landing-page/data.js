@@ -89,23 +89,12 @@ export const demoMenus = [
     icon: DashBoard,
     child: [
       {
-        title: "Analytics",
+        title: "Inicio",
         href: "/dashboard",
         icon: Graph,
         image: analyticsPage,
       },
-      {
-        title: "Ecommerce",
-        href: "/ecommerce",
-        icon: Cart,
-        image: ecommercePage,
-      },
-      {
-        title: "Project ",
-        href: "/project",
-        icon: ClipBoard,
-        image: projectPage,
-      },
+     
     ],
   },
   {
@@ -282,7 +271,7 @@ export const demoMenus = [
 
       {
         title: "Sign In 01",
-        href: "/auth/login",
+        href: "/auth/login5",
         image: pageSignIn1,
       },
       {

@@ -16,7 +16,7 @@ const DashboardPageView = ({ trans }) => {
     <div className="space-y-6">
       <div className="flex items-center flex-wrap justify-between gap-4">
         <div className="text-2xl font-medium text-default-800 ">
-          Analytics {trans?.dashboard}
+          Estadisticas {trans?.dashboard}
         </div>
         <DatePickerWithRange />
       </div>
@@ -36,7 +36,7 @@ const DashboardPageView = ({ trans }) => {
         <Card>
           <CardHeader className="border-none p-6 pt-5 mb-0">
             <CardTitle className="text-lg font-semibold text-default-900 p-0">
-              New vs Returning Visitors
+              Gráficos resultados
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -44,19 +44,19 @@ const DashboardPageView = ({ trans }) => {
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="border-none p-6 pt-5 mb-0">
-            <CardTitle className="text-lg font-semibold text-default-900 p-0">
-              Device Breakdown
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="dashtail-legend">
-              <UserDeviceReport />
-            </div>
-          </CardContent>
-        </Card>
+  <CardHeader className="border-none p-6 pt-5 mb-0">
+    <CardTitle className="text-lg font-semibold text-default-900 p-0">
+      Estadisticas Citas
+    </CardTitle>
+  </CardHeader>
+  <CardContent>
+    <div className="dashtail-legend">
+      <UserDeviceReport />
+    </div>
+  </CardContent>
+</Card>
       </div>
-      <div className="col-span-2">
+      {/* <div className="col-span-2">
         <Card>
           <CardHeader className="border-none pb-0">
             <div className="flex flex-wrap items-center gap-2">
@@ -87,7 +87,7 @@ const DashboardPageView = ({ trans }) => {
             </CardContent>
           </Card>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

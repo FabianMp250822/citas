@@ -76,7 +76,7 @@ const RegisterPage = () => {
                       className="text-primary-foreground text-2xl"
                     />
                   </span>
-                  DashTail is awesome friendly Admin Dashboard Template. If you
+                  DashTail222 is awesome friendly Admin Dashboard Template. If you
                   manage your business in online then “DashTail” is for you. Buy
                   Now & make user friendly your business today...
                 </div>

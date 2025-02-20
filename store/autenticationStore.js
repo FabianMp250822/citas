@@ -1,4 +1,3 @@
-// src/store/autenticationStore.js
 import { create } from 'zustand';
 import {
   getAuth,
@@ -25,7 +24,6 @@ const useAuthenticationStore = create((set, get) => ({
   // Inicializa la autenticación y actualiza el contexto con datos adicionales
   initializeAuth: () => {
     if (typeof window !== 'undefined') {
-      // Si auth no está inicializado (por ejemplo, en SSR), lo volvemos a inicializar
       if (!get().auth) {
         set({ auth: getAuth() });
       }
@@ -33,10 +31,8 @@ const useAuthenticationStore = create((set, get) => ({
       onAuthStateChanged(auth, async (user) => {
         set({ loading: true });
         if (user) {
-          // Actualizamos el usuario autenticado
           set({ user });
           try {
-            // Obtener el rol desde la colección "roles"
             const roleDocRef = doc(db, "roles", user.uid);
             const roleSnap = await getDoc(roleDocRef);
             if (roleSnap.exists()) {
@@ -50,12 +46,10 @@ const useAuthenticationStore = create((set, get) => ({
             set({ role: null, error: error.message });
           }
           try {
-            // Obtener datos adicionales desde la colección "agentes"
             const agentesDocRef = doc(db, "agentes", user.uid);
             const agentesSnap = await getDoc(agentesDocRef);
             if (agentesSnap.exists()) {
               const agentesData = agentesSnap.data();
-              // Fusionamos los datos adicionales con el objeto user de Firebase
               set({ user: { ...user, ...agentesData } });
             }
           } catch (error) {
@@ -71,20 +65,24 @@ const useAuthenticationStore = create((set, get) => ({
     }
   },
 
-  // Función para el login con email y contraseña
+  // Función para el login con email y contraseña que retorna el resultado
   login: async (email, password) => {
     if (typeof window !== 'undefined' && get().auth) {
       const auth = get().auth;
       set({ loading: true, error: null });
       try {
-        await signInWithEmailAndPassword(auth, email, password);
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
         // La actualización del usuario se realizará en onAuthStateChanged
+        set({ loading: false });
+        return userCredential;
       } catch (error) {
         set({ error: error.message, loading: false });
+        return null;
       }
     } else {
       console.warn("Firebase Auth no está disponible en este entorno.");
       set({ error: "Firebase Auth no está disponible.", loading: false });
+      return null;
     }
   },
 

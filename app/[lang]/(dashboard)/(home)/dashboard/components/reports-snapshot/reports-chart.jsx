@@ -1,6 +1,8 @@
 "use client";
+
 import dynamic from "next/dynamic";
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
+
 import { useThemeStore } from "@/store";
 import { useTheme } from "next-themes";
 import { themes } from "@/config/thems";
@@ -11,11 +13,12 @@ import {
 } from "@/lib/appex-chart-options";
 
 const ReportsChart = ({ series, chartColor, height = 300 }) => {
-  const { theme: config, setTheme: setConfig } = useThemeStore();
+  // Traemos la info de tema
+  const { theme: config } = useThemeStore();
   const { theme: mode } = useTheme();
-
   const theme = themes.find((theme) => theme.name === config);
 
+  // Configuración ApexCharts
   const options = {
     chart: {
       toolbar: {
@@ -59,16 +62,15 @@ const ReportsChart = ({ series, chartColor, height = 300 }) => {
       left: 0,
     },
   };
+
   return (
-    <>
-      <Chart
-        options={options}
-        series={series}
-        type="area"
-        height={height}
-        width={"100%"}
-      />
-    </>
+    <Chart
+      options={options}
+      series={series}
+      type="area"
+      height={height}
+      width="100%"
+    />
   );
 };
 

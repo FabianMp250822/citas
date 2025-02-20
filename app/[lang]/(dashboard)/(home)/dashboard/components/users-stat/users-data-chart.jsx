@@ -1,28 +1,49 @@
 "use client";
+
 import dynamic from "next/dynamic";
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
+
 import { useThemeStore } from "@/store";
 import { useTheme } from "next-themes";
 import { themes } from "@/config/thems";
 import { getGridConfig } from "@/lib/appex-chart-options";
 
-const UsersDataChart = ({ height = 160 }) => {
-  const { theme: config, setTheme: setConfig } = useThemeStore();
+// Recibimos "data" como prop, donde data es [{ city: "X", count: 10 }, ...]
+const UsersDataChart = ({ data = [], height = 160 }) => {
+  // Configuración de tema (no tocaremos mucho esta parte)
+  const { theme: config } = useThemeStore();
   const { theme: mode } = useTheme();
   const theme = themes.find((theme) => theme.name === config);
 
+  // Convertimos "data" en la estructura necesaria para ApexCharts
   const series = [
     {
-      data: [400, 60, 448, 50, 540, 580, 690, 800],
+      name: "Pacientes",
+      data: data.map((item) => item.count),
     },
   ];
 
+  // Opciones de la gráfica
   const options = {
     chart: {
       toolbar: {
         show: false,
       },
     },
+    // Mostramos las categorías en el eje X como las ciudades
+    xaxis: {
+      categories: data.map((item) => item.city),
+      labels: {
+        show: true,
+      },
+      axisBorder: {
+        show: false,
+      },
+      axisTicks: {
+        show: false,
+      },
+    },
+    // Sin datos dentro de las barras
     dataLabels: {
       enabled: false,
     },
@@ -30,6 +51,7 @@ const UsersDataChart = ({ height = 160 }) => {
       curve: "smooth",
       width: 0,
     },
+    // Color principal (basado en tu tema)
     colors: [
       `hsl(${theme?.cssVars[mode === "dark" ? "dark" : "light"].primary})`,
     ],
@@ -39,27 +61,15 @@ const UsersDataChart = ({ height = 160 }) => {
     grid: getGridConfig(
       `hsl(${theme?.cssVars[mode === "dark" ? "dark" : "light"].chartGird})`
     ),
+    // Mostramos el eje Y
     yaxis: {
-      show: false,
+      show: true,
     },
-    bar: {
-      columnWidth: "100%",
-      barHeight: "100%",
-    },
-
-    xaxis: {
-      labels: {
-        show: false,
-      },
-      axisBorder: {
-        show: false,
-      },
-      axisTicks: {
-        show: false,
-      },
-    },
+    // Propiedades para la gráfica de barras
     plotOptions: {
       bar: {
+        columnWidth: "50%",
+        borderRadius: 4,
         horizontal: false,
       },
     },
@@ -70,14 +80,15 @@ const UsersDataChart = ({ height = 160 }) => {
       left: 0,
     },
   };
+
   return (
-      <Chart
-        options={options}
-        series={series}
-        type="bar"
-        height={height}
-        width={"100%"}
-      />
+    <Chart
+      options={options}
+      series={series}
+      type="bar"
+      height={height}
+      width={"100%"}
+    />
   );
 };
 

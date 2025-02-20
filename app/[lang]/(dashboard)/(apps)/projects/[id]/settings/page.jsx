@@ -122,7 +122,7 @@ const Settings = () => {
         <div className="grid grid-cols-12 items-center gap-5">
           <div className="col-span-12 md:col-span-3">
             <div className="text-sm font-medium text-default-700">
-              Notifications
+              Notifications2
             </div>
           </div>
           <div className="col-span-12 md:col-span-9">

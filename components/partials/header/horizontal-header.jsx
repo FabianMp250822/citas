@@ -13,7 +13,7 @@ const horizontalHeader = ({ handleOpenSearch }) => {
             <SiteLogo className="h-7 w-7" />
             <span className=" text-xl font-semibold lg:inline-block hidden">
               {" "}
-              DashTail
+              DashTail222
             </span>
           </Link>
         </div>
@@ -24,7 +24,7 @@ const horizontalHeader = ({ handleOpenSearch }) => {
           <span>
             <Search className=" h-4 w-4" />
           </span>
-          <span className=" lg:inline-block hidden"> Search...</span>
+          <span className=" lg:inline-block hidden"> S22earch...</span>
         </button>
       </div>
   );

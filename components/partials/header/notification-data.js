@@ -10,7 +10,7 @@ import avatar8 from "@/public/images/avatar/avatar-8.jpg";
 export const notifications = [
   {
     id: 1,
-    fullName: "Felecia Rower",
+    fullName: "Felecia Rower ",
     role: "Frontend Developer",
     message:
       "Cake pie jelly jelly beans. Marzipan lemon drops halvah cake. Pudding cookie lemon drops icing",

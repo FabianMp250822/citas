@@ -50,20 +50,11 @@ export const menusConfig = {
       icon: DashBoard,
       child: [
         {
-          title: "Analytics",
+          title: "Inicio",
           href: "/dashboard",
           icon: Graph,
         },
-        {
-          title: "Ecommerce",
-          href: "/ecommerce",
-          icon: Cart,
-        },
-        {
-          title: "Project ",
-          href: "/project",
-          icon: ClipBoard,
-        },
+       
       ],
     },
     {
@@ -988,20 +979,11 @@ export const menusConfig = {
         icon: DashBoard,
         child: [
           {
-            title: "Analytics",
+            title: "Inicio",
             href: "/dashboard",
             icon: Graph,
           },
-          {
-            title: "Ecommerce",
-            href: "/ecommerce",
-            icon: Cart,
-          },
-          {
-            title: "project ",
-            href: "/project",
-            icon: ClipBoard,
-          },
+          
         ],
       },
       {

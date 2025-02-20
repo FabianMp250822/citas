@@ -22,7 +22,7 @@ import {
 const BasicCommand = () => {
   return (
     <Command className="rounded-lg border shadow-md">
-      <CommandInput placeholder="Type a command or search..." />
+      <CommandInput placeholder="Type a command or s222earch..." />
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
         <CommandGroup heading="Suggestions">
