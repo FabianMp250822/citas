@@ -1,13 +1,13 @@
 "use client";
 import Card from "@/components/ui/card-snippet";
-import BasicTable from "./basic-table";
+import CreateDoctorForm from "./create-doctor";
 
 
 const SimpleTablePage = () => {
   return (
     <div className=" space-y-5">
-      <Card title="Listar Pacientes">
-        <BasicTable />
+      <Card title="Pacientess asignados">
+        <CreateDoctorForm />
       </Card>
     
     </div>

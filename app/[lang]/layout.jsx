@@ -10,9 +10,7 @@ import "flatpickr/dist/themes/light.css";
 import DirectionProvider from "@/provider/direction.provider";
 import { ChatProvider } from "@/store/ChatContext";
 import { AppointmentsProvider } from "@/store/citaStore";
-
-// Importa tu AppointmentsProvider
-
+import { DoctorsProvider } from "@/store/doctorContex"; 
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,20 +25,24 @@ export const metadata = {
 export default function RootLayout({ children, params: { lang } }) {
   return (
     <html lang={lang}>
-      <AuthProvider>
-        <TanstackProvider>
-          <Providers>
-            <ChatProvider>
-              <DirectionProvider lang={lang}>
-                {/* AÑADE AQUÍ AppointmentsProvider */}
-                <AppointmentsProvider>
-                  {children}
-                </AppointmentsProvider>
-              </DirectionProvider>
-            </ChatProvider>
-          </Providers>
-        </TanstackProvider>
-      </AuthProvider>
+      <body className={inter.className}>
+        <AuthProvider>
+          <TanstackProvider>
+            <Providers>
+              <ChatProvider>
+                <DirectionProvider lang={lang}>
+                  {/* Envolvemos con DoctorsProvider y AppointmentsProvider */}
+                  <DoctorsProvider>
+                    <AppointmentsProvider>
+                      {children}
+                    </AppointmentsProvider>
+                  </DoctorsProvider>
+                </DirectionProvider>
+              </ChatProvider>
+            </Providers>
+          </TanstackProvider>
+        </AuthProvider>
+      </body>
     </html>
   );
 }
