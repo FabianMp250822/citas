@@ -1,234 +1,223 @@
 "use client";
-import { useCallback, useEffect, useRef } from "react";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
-
+import React, { useEffect, useState, useRef } from "react";
+import moment from "moment";
+import "moment/locale/es"; // Configuramos moment en español
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
-import ContactList from "./contact-list";
-import { useState } from "react";
 import Blank from "./blank";
 import MessageHeader from "./message-header";
 import MessageFooter from "./message-footer";
-
 import Messages from "./messages";
-import {
-  getContacts,
-  getMessages,
-  getProfile,
-  sendMessage,
-  deleteMessage,
-} from "./chat-config";
-
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import MyProfileHeader from "./my-profile-header";
 import EmptyMessage from "./empty-message";
 import Loader from "./loader";
-import { isObjectNotEmpty } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import SearchMessages from "./contact-info/search-messages";
 import PinnedMessages from "./pin-messages";
 import ForwardMessage from "./forward-message";
 import ContactInfo from "./contact-info";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { cn } from "@/lib/utils";
+import usePatientsStore from "@/store/pacientesStore"; // Store de pacientes (Zustand)
+import { useChat } from "@/store/ChatContext";        // Nuestro ChatContext
+import ContactList from "./contact-list";
+import { usePredefinedMessages } from "@/hooks/usePredefinedMessages"; // Hook para mensajes predefinidos (si lo usas)
+
+moment.locale("es");
+
 const ChatPage = () => {
+  // Estados de UI
   const [selectedChatId, setSelectedChatId] = useState(null);
   const [showContactSidebar, setShowContactSidebar] = useState(false);
-
   const [showInfo, setShowInfo] = useState(false);
-  const queryClient = useQueryClient();
-  // Memoize getMessages using useCallback
-  const getMessagesCallback = useCallback((chatId) => getMessages(chatId), []);
-  // reply state
   const [replay, setReply] = useState(false);
   const [replayData, setReplyData] = useState({});
-
-  // search state
   const [isOpenSearch, setIsOpenSearch] = useState(false);
-
   const [pinnedMessages, setPinnedMessages] = useState([]);
-  // Forward State
   const [isForward, setIsForward] = useState(false);
 
-  const {
-    isLoading,
-    isError,
-    data: contacts,
-    error,
-    refetch: refetchContact,
-  } = useQuery({
-    queryKey: ["contacts"],
-    queryFn: () => getContacts(),
-    keepPreviousData: true,
-  });
-  const {
-    isLoading: messageLoading,
-    isError: messageIsError,
-    data: chats,
-    error: messageError,
-    refetch: refetchMessage,
-  } = useQuery({
-    queryKey: ["message", selectedChatId],
-    queryFn: () => getMessagesCallback(selectedChatId),
-    keepPreviousData: true,
-  });
-  const {
-    isLoading: profileLoading,
-    isError: profileIsError,
-    data: profileData,
-    error: profileError,
-    refetch: refetchProfile,
-  } = useQuery({
-    queryKey: ["profile"],
-    queryFn: () => getProfile(),
-    keepPreviousData: true,
-  });
-  const messageMutation = useMutation({
-    mutationFn: sendMessage,
-    onSuccess: () => {
-      queryClient.invalidateQueries("messages");
-    },
-  });
+  // Estado para el status del paciente (puede ser "activo", "inactivo", etc.)
+  const [patientStatus, setPatientStatus] = useState("activo");
 
-  const deleteMutation = useMutation({
-    mutationFn: deleteMessage,
-    onSuccess: () => {
-      queryClient.invalidateQueries("messages");
-    },
-  });
+  // Estado para el texto de búsqueda
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const onDelete = (selectedChatId, index) => {
-    const obj = { selectedChatId, index };
-    deleteMutation.mutate(obj);
+  // Del store de pacientes
+  const { patients, loading, fetchPatients } = usePatientsStore();
 
-    // Remove the deleted message from pinnedMessages if it exists
-    const updatedPinnedMessages = pinnedMessages.filter(
-      (msg) => msg.selectedChatId !== selectedChatId && msg.index !== index
+  // Del ChatContext
+  const {
+    user,
+    messages,
+    subLoading,
+    subscribeToChat,
+    handleSendMessage,
+    handleDeleteMessage,
+  } = useChat();
+
+  // Mensajes predefinidos
+  const { messages: predefinedMessages, loading: predefinedLoading } = usePredefinedMessages();
+
+  useEffect(() => {
+    fetchPatients();
+  }, [fetchPatients]);
+
+  // Suscribirse al chat cuando cambia selectedChatId
+  useEffect(() => {
+    if (!selectedChatId) return;
+    console.log("Suscribiéndose al chat con ID:", selectedChatId);
+    const unsubscribe = subscribeToChat(selectedChatId);
+    return () => {
+      console.log("Desuscribiéndose del chat con ID:", selectedChatId);
+      if (unsubscribe) unsubscribe();
+    };
+  }, [selectedChatId, subscribeToChat]);
+
+  // Scroll automático al final cuando llegan mensajes
+  const chatHeightRef = useRef(null);
+  useEffect(() => {
+    if (chatHeightRef.current) {
+      chatHeightRef.current.scrollTo({
+        top: chatHeightRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [messages]);
+
+  // Lógica de bienvenida (opcional)
+  useEffect(() => {
+    if (selectedChatId && messages.length === 0 && !predefinedLoading) {
+      if (patientStatus !== "activo") {
+        console.log("Paciente no activo, no se envía mensaje de bienvenida.");
+        return;
+      }
+      if (predefinedMessages?.firstmessage) {
+        handleSendMessage(selectedChatId, predefinedMessages.firstmessage);
+      }
+    }
+  }, [
+    selectedChatId,
+    messages,
+    patientStatus,
+    predefinedLoading,
+    predefinedMessages,
+    handleSendMessage
+  ]);
+
+  // (Opcional) Lógica de inactividad
+  useEffect(() => {
+    if (!selectedChatId || messages.length === 0) return;
+    const lastPatientMsg = [...messages].reverse().find(
+      (msg) => msg.senderId === selectedChatId
     );
+    if (!lastPatientMsg || !lastPatientMsg.timestamp) return;
 
-    setPinnedMessages(updatedPinnedMessages);
-  };
+    const lastMsgTime = lastPatientMsg.timestamp.toDate
+      ? lastPatientMsg.timestamp.toDate()
+      : new Date(lastPatientMsg.timestamp);
 
+    const diffMinutes = moment().diff(moment(lastMsgTime), "minutes");
+    if (diffMinutes >= 15 && patientStatus === "activo") {
+      console.log("Paciente inactivo tras 15 minutos sin escribir.");
+      setPatientStatus("inactivo");
+      // Aquí podrías actualizar en Firestore si lo deseas
+    } else if (diffMinutes < 15 && patientStatus === "inactivo") {
+      console.log("Paciente vuelve a escribir, lo ponemos 'activo'.");
+      setPatientStatus("activo");
+      // También podrías actualizar en Firestore
+    }
+  }, [messages, selectedChatId, patientStatus]);
+
+  // Función para abrir un chat al hacer clic en un contacto
   const openChat = (chatId) => {
+    console.log("openChat llamado con chatId:", chatId);
+    if (chatId === selectedChatId) {
+      console.log("El chat ya está abierto, no hacemos nada.");
+      return;
+    }
     setSelectedChatId(chatId);
     setReply(false);
     if (showContactSidebar) {
       setShowContactSidebar(false);
     }
   };
-  const handleShowInfo = () => {
-    setShowInfo(!showInfo);
-  };
-  const handleSendMessage = (message) => {
-    if (!selectedChatId || !message) return;
 
-    const newMessage = {
-      message: message,
-      contact: { id: selectedChatId },
-      replayMetadata: isObjectNotEmpty(replayData),
-    };
-    messageMutation.mutate(newMessage);
-    console.log(message, "ami msg");
+  // Lógica para eliminar mensajes
+  const onDelete = (chatId, messageId) => {
+    console.log("Eliminando mensaje con id:", messageId, "del chat:", chatId);
+    handleDeleteMessage(chatId, messageId);
+    setPinnedMessages((prev) => prev.filter((p) => p.index !== messageId));
   };
-  const chatHeightRef = useRef(null);
 
-  // replay message
+  // Lógica para "reply"
   const handleReply = (data, contact) => {
-    const newObj = {
-      message: data,
-      contact,
-    };
     setReply(true);
-    setReplyData(newObj);
+    setReplyData({ message: data, contact });
   };
 
-  useEffect(() => {
-    if (chatHeightRef.current) {
-      chatHeightRef.current.scrollTo({
-        top: chatHeightRef.current.scrollHeight,
-        behavior: "smooth",
-      });
-    }
-  }, [handleSendMessage, contacts]);
-  useEffect(() => {
-    if (chatHeightRef.current) {
-      chatHeightRef.current.scrollTo({
-        top: chatHeightRef.current.scrollHeight,
-        behavior: "smooth",
-      });
-    }
-  }, [pinnedMessages]);
-
-  // handle search bar
-
-  const handleSetIsOpenSearch = () => {
-    setIsOpenSearch(!isOpenSearch);
+  // Función para enviar mensaje
+  const handleSendMsg = (messageContent, file = null) => {
+    if (!selectedChatId || !messageContent) return;
+    console.log("Enviando mensaje desde ChatPage, replayData:", replayData);
+    handleSendMessage(selectedChatId, messageContent, file);
+    setReply(false);
   };
-  // handle pin note
 
+  // Lógica para "pin"
   const handlePinMessage = (note) => {
     const updatedPinnedMessages = [...pinnedMessages];
-
     const existingIndex = updatedPinnedMessages.findIndex(
       (msg) => msg.note === note.note
     );
-
     if (existingIndex !== -1) {
-      updatedPinnedMessages.splice(existingIndex, 1); // Remove the message
-      //setIsPinned(false);
+      updatedPinnedMessages.splice(existingIndex, 1);
     } else {
-      updatedPinnedMessages.push(note); // Add the message
-      // setIsPinned(true);
+      updatedPinnedMessages.push(note);
     }
-
     setPinnedMessages(updatedPinnedMessages);
   };
-
   const handleUnpinMessage = (pinnedMessage) => {
-    // Create a copy of the current pinned messages array
-    const updatedPinnedMessages = [...pinnedMessages];
-
-    // Find the index of the message to unpin in the updatedPinnedMessages array
-    const index = updatedPinnedMessages.findIndex(
-      (msg) =>
-        msg.note === pinnedMessage.note && msg.avatar === pinnedMessage.avatar
-    );
-
-    if (index !== -1) {
-      // If the message is found in the array, remove it (unpin)
-      updatedPinnedMessages.splice(index, 1);
-      // Update the state with the updated pinned messages array
-      setPinnedMessages(updatedPinnedMessages);
-    }
+    const updated = pinnedMessages.filter((p) => p.note !== pinnedMessage.note);
+    setPinnedMessages(updated);
   };
 
-  // Forward handle
+  // Lógica para "forward"
   const handleForward = () => {
     setIsForward(!isForward);
   };
+
+  // Lógica para "search"
+  const handleSetIsOpenSearch = () => {
+    setIsOpenSearch(!isOpenSearch);
+  };
+
+  // Lógica para "info" lateral
+  const handleShowInfo = () => {
+    setShowInfo(!showInfo);
+  };
+
+  // Función para que el agente cambie manualmente el estado del paciente
+  const handlePatientStatusChange = (e) => {
+    const newStatus = e.target.value;
+    console.log(`Cambiando estado del paciente a: ${newStatus}`);
+    setPatientStatus(newStatus);
+    // Si deseas actualizarlo en Firestore, lo harías aquí
+  };
+
+  // ---- LÓGICA DE FILTRO ----
+  // Filtramos los pacientes según el 'searchTerm'. 
+  // Filtramos por 'nombres' + 'apellidos' (o cualquier campo que necesites).
+  const filteredPatients = patients.filter((p) => {
+    const fullName = `${p.nombres} ${p.apellidos}`.toLowerCase();
+    return fullName.includes(searchTerm.toLowerCase());
+  });
+
   const isLg = useMediaQuery("(max-width: 1024px)");
+
   return (
-    <div className="flex gap-5 app-height  relative rtl:space-x-reverse">
-      {isLg && showContactSidebar && (
-        <div
-          className=" bg-background/60 backdrop-filter
-         backdrop-blur-sm absolute w-full flex-1 inset-0 z-[99] rounded-md"
-          onClick={() => setShowContactSidebar(false)}
-        ></div>
-      )}
-      {isLg && showInfo && (
-        <div
-          className=" bg-background/60 backdrop-filter
-         backdrop-blur-sm absolute w-full flex-1 inset-0 z-40 rounded-md"
-          onClick={() => setShowInfo(false)}
-        ></div>
-      )}
+    <div className="flex gap-5 app-height relative rtl:space-x-reverse">
+      {/* Sidebar de contactos (lista de pacientes) */}
       <div
-        className={cn("transition-all duration-150 flex-none  ", {
+        className={cn("transition-all duration-150 flex-none", {
           "absolute h-full top-0 md:w-[260px] w-[200px] z-[999]": isLg,
           "flex-none min-w-[260px]": !isLg,
           "left-0": isLg && showContactSidebar,
@@ -237,17 +226,27 @@ const ChatPage = () => {
       >
         <Card className="h-full pb-0">
           <CardHeader className="border-none pb-0 mb-0">
-            <MyProfileHeader profile={profileData} />
+            {/* 
+              Pasamos la función setSearchTerm a MyProfileHeader
+              para que el usuario escriba y se actualice 'searchTerm' 
+            */}
+            <MyProfileHeader 
+              profile={user}
+              searchTerm={searchTerm}
+              onSearchChange={(value) => setSearchTerm(value)}
+            />
           </CardHeader>
-          <CardContent className="pt-0 px-0   lg:h-[calc(100%-170px)] h-[calc(100%-70px)]   ">
+
+          <CardContent className="pt-0 px-0 lg:h-[calc(100%-170px)] h-[calc(100%-70px)]">
             <ScrollArea className="h-full">
-              {isLoading ? (
+              {loading ? (
                 <Loader />
               ) : (
-                contacts?.contacts?.map((contact) => (
+                // Aquí usamos 'filteredPatients' en lugar de 'patients'
+                filteredPatients.map((patient) => (
                   <ContactList
-                    key={contact.id}
-                    contact={contact}
+                    key={patient.id}
+                    contact={patient}
                     selectedChatId={selectedChatId}
                     openChat={openChat}
                   />
@@ -257,58 +256,53 @@ const ChatPage = () => {
           </CardContent>
         </Card>
       </div>
-      {/* chat sidebar  end*/}
-      {/* chat messages start */}
+
+      {/* Área principal del chat */}
       {selectedChatId ? (
-        <div className="flex-1 ">
-          <div className=" flex space-x-5 h-full rtl:space-x-reverse">
+        <div className="flex-1">
+          <div className="flex space-x-5 h-full rtl:space-x-reverse">
             <div className="flex-1">
-              <Card className="h-full flex flex-col ">
+              <Card className="h-full flex flex-col">
+                {/* Encabezado del chat: datos del paciente + selector de estado */}
                 <CardHeader className="flex-none mb-0">
                   <MessageHeader
                     showInfo={showInfo}
                     handleShowInfo={handleShowInfo}
-                    profile={profileData}
-                    mblChatHandler={() =>
-                      setShowContactSidebar(!showContactSidebar)
-                    }
+                    profile={patients.find((p) => p.id === selectedChatId)}
+                    mblChatHandler={() => setShowContactSidebar(!showContactSidebar)}
+                    patientStatus={patientStatus}
+                    onPatientStatusChange={handlePatientStatusChange}
                   />
                 </CardHeader>
+
                 {isOpenSearch && (
-                  <SearchMessages
-                    handleSetIsOpenSearch={handleSetIsOpenSearch}
-                  />
+                  <SearchMessages handleSetIsOpenSearch={handleSetIsOpenSearch} />
                 )}
 
-                <CardContent className=" !p-0 relative flex-1 overflow-y-auto">
-                  <div
-                    className="h-full py-4 overflow-y-auto no-scrollbar"
-                    ref={chatHeightRef}
-                  >
-                    {messageLoading ? (
+                <CardContent className="!p-0 relative flex-1 overflow-y-auto">
+                  <div className="h-full py-4 overflow-y-auto no-scrollbar" ref={chatHeightRef}>
+                    {subLoading ? (
                       <Loader />
+                    ) : messages.length === 0 ? (
+                      <EmptyMessage />
                     ) : (
                       <>
-                        {messageIsError ? (
-                          <EmptyMessage />
-                        ) : (
-                          chats?.chat?.chat?.map((message, i) => (
-                            <Messages
-                              key={`message-list-${i}`}
-                              message={message}
-                              contact={chats?.contact}
-                              profile={profileData}
-                              onDelete={onDelete}
-                              index={i}
-                              selectedChatId={selectedChatId}
-                              handleReply={handleReply}
-                              replayData={replayData}
-                              handleForward={handleForward}
-                              handlePinMessage={handlePinMessage}
-                              pinnedMessages={pinnedMessages}
-                            />
-                          ))
-                        )}
+                        {messages.map((message) => (
+                          <Messages
+                            key={message.id}
+                            message={message}
+                            contact={{ avatar: null, name: "Usuario" }}
+                            profile={user}
+                            onDelete={onDelete}
+                            index={message.id}
+                            selectedChatId={selectedChatId}
+                            handleReply={handleReply}
+                            replayData={replayData}
+                            handleForward={handleForward}
+                            handlePinMessage={handlePinMessage}
+                            pinnedMessages={pinnedMessages}
+                          />
+                        ))}
                       </>
                     )}
                     <PinnedMessages
@@ -319,22 +313,20 @@ const ChatPage = () => {
                 </CardContent>
                 <CardFooter className="flex-none flex-col px-0 py-4 border-t border-border">
                   <MessageFooter
-                    handleSendMessage={handleSendMessage}
+                    chatId={selectedChatId}
                     replay={replay}
                     setReply={setReply}
                     replayData={replayData}
+                    handleSendMessage={handleSendMsg}
                   />
                 </CardFooter>
               </Card>
             </div>
-
             {showInfo && (
               <ContactInfo
                 handleSetIsOpenSearch={handleSetIsOpenSearch}
                 handleShowInfo={handleShowInfo}
-                contact={contacts?.contacts?.find(
-                  (contact) => contact.id === selectedChatId
-                )}
+                contact={patients.find((patient) => patient.id === selectedChatId)}
               />
             )}
           </div>
@@ -342,11 +334,12 @@ const ChatPage = () => {
       ) : (
         <Blank mblChatHandler={() => setShowContactSidebar(true)} />
       )}
+
       <ForwardMessage
         open={isForward}
         contact={"s"}
         setIsOpen={setIsForward}
-        contacts={contacts}
+        contacts={patients}
       />
     </div>
   );

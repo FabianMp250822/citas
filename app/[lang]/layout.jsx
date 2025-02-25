@@ -8,6 +8,12 @@ import TanstackProvider from "@/provider/providers.client";
 import AuthProvider from "@/provider/auth.provider";
 import "flatpickr/dist/themes/light.css";
 import DirectionProvider from "@/provider/direction.provider";
+import { ChatProvider } from "@/store/ChatContext";
+import { AppointmentsProvider } from "@/store/citaStore";
+
+// Importa tu AppointmentsProvider
+
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
@@ -24,7 +30,14 @@ export default function RootLayout({ children, params: { lang } }) {
       <AuthProvider>
         <TanstackProvider>
           <Providers>
-            <DirectionProvider lang={lang}>{children}</DirectionProvider>
+            <ChatProvider>
+              <DirectionProvider lang={lang}>
+                {/* AÑADE AQUÍ AppointmentsProvider */}
+                <AppointmentsProvider>
+                  {children}
+                </AppointmentsProvider>
+              </DirectionProvider>
+            </ChatProvider>
           </Providers>
         </TanstackProvider>
       </AuthProvider>

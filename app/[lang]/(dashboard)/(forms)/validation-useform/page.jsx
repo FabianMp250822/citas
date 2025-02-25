@@ -9,7 +9,7 @@ import ValidateCheckbox from "./validate-checkbox";
 const ValidationUseForm = () => {
   return (
     <div className="space-y-4 lg:space-y-0 lg:grid lg:grid-cols-2 gap-6">
-      <Card title="Simple Form">
+      {/* <Card title="Simple Form">
         <SimpleForm />
       </Card>
       <Card title="Validation with Tooltip">
@@ -23,9 +23,9 @@ const ValidationUseForm = () => {
       </Card>
       <Card title="Validate Checkbox">
         <ValidateCheckbox />
-      </Card>
+      </Card> */}
       <div className="col-span-2">
-        <Card title="Multiple Types">
+        <Card title="Crear agentes">
           <MultipleTypes />
         </Card>
       </div>

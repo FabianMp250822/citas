@@ -33,7 +33,7 @@ export const calendarEvents = [
   },
   {
     id: 3,
-    title: "Lunch",
+    title: "Luncho22",
     allDay: true,
     start: new Date(date.getFullYear(), date.getMonth() + 1, -9),
     end: new Date(date.getFullYear(), date.getMonth() + 1, -7),

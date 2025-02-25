@@ -17,7 +17,7 @@ import avatar11 from "@/public/images/avatar/avatar-11.jpg";
 export const profileUser = {
   id: 11,
   avatar: avatar1,
-  fullName: "Mr. Bean",
+  fullName: "Mr. Kakaroto",
   bio: "UX/UI Designer",
   role: "admin",
   about:

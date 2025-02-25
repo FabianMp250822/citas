@@ -131,3 +131,145 @@ exports.getCrmStatistics = onRequest((req, res) => {
   });
 });
 
+// Función para asignar un chat a un agente de forma equitativa
+// eslint-disable-next-line max-len
+exports.assignChatToAgent = onDocumentCreated("chats/{chatId}", async (event) => {
+  const snap = event.data;
+  const chatId = event.params?.chatId;
+
+  if (!snap) {
+    console.error("Documento de chat sin datos");
+    return;
+  }
+
+  const chatData = snap.data();
+  if (!chatData) {
+    console.error("No se pudo extraer la información del chat");
+    return;
+  }
+
+  // Paso 1: Actualizar el contador de chats en "counters/chats"
+  const counterRef = admin.firestore().doc("counters/chats");
+  let newCount = 0;
+  try {
+    await admin.firestore().runTransaction(async (transaction) => {
+      const counterDoc = await transaction.get(counterRef);
+      if (!counterDoc.exists) {
+        newCount = 1;
+        transaction.set(counterRef, {count: newCount});
+      } else {
+        const currentCount = counterDoc.data().count || 0;
+        newCount = currentCount + 1;
+        transaction.update(counterRef, {count: newCount});
+      }
+    });
+  } catch (error) {
+    console.error("Error al actualizar el contador de chats:", error);
+    return;
+  }
+
+  // Paso 2: Obtener la lista de agentes ordenada por "idAgente" (ascendente)
+  let agentsSnapshot;
+  try {
+    agentsSnapshot = await admin.firestore()
+        .collection("agentes")
+        .orderBy("idAgente", "asc")
+        .get();
+  } catch (error) {
+    console.error("Error al obtener agentes:", error);
+    return;
+  }
+
+  if (agentsSnapshot.empty) {
+    console.error("No hay agentes disponibles para asignar el chat.");
+    return;
+  }
+
+  const agents = agentsSnapshot.docs;
+  const numberOfAgents = agents.length;
+  // Asignación round-robin: (newCount - 1) mod numberOfAgents
+  const agentIndex = (newCount - 1) % numberOfAgents;
+  const selectedAgentDoc = agents[agentIndex];
+  const selectedAgentId = selectedAgentDoc.id;
+  // eslint-disable-next-line max-len
+  // Paso 3: Actualizar el documento del chat con la información del agente asignado y la posición
+  const updateData = {
+    assignedAgent: selectedAgentId,
+    chatPosition: newCount,
+    assignedAt: admin.firestore.FieldValue.serverTimestamp(),
+  };
+
+  try {
+    await admin.firestore().collection("chats").doc(chatId).update(updateData);
+    // eslint-disable-next-line max-len
+    console.log(`Chat ${chatId} asignado al agente ${selectedAgentId} en la posición ${newCount}`);
+  } catch (error) {
+    console.error("Error al asignar el chat al agente:", error);
+  }
+});
+
+
+exports.createAgent = onRequest((req, res) => {
+  // Habilitar CORS
+  cors(req, res, async () => {
+    try {
+      // Solo se permiten peticiones POST
+      if (req.method !== "POST") {
+        return res.status(405).json({error: "Método no permitido"});
+      }
+
+      // Extraer datos del cuerpo de la petición
+      const {
+        agentName,
+        phone,
+        email,
+        password,
+        city,
+        sucursal,
+        inputMessage,
+        agentCode,
+        department,
+      } = req.body;
+
+      // Validar que los campos requeridos estén presentes
+      // eslint-disable-next-line max-len
+      if (!agentName || !phone || !email || !password || !city || !sucursal || !agentCode) {
+        return res.status(400).json({error: "Faltan campos obligatorios."});
+      }
+
+      // Crear el usuario en Firebase Authentication
+      const userRecord = await admin.auth().createUser({
+        email,
+        password,
+      });
+
+      // Preparar los datos adicionales para el agente
+      const agentData = {
+        agentName,
+        phone,
+        email,
+        city,
+        sucursal,
+        inputMessage,
+        agentCode,
+        department: department || null,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        uid: userRecord.uid,
+      };
+
+      // Agregar los datos a la colección "agentes"
+      // eslint-disable-next-line max-len
+      await admin.firestore().collection("agentes").doc(userRecord.uid).set(agentData);
+
+      // Responder al cliente con éxito
+      res.status(200).json({
+        message: "Agente creado correctamente",
+        uid: userRecord.uid,
+      });
+    } catch (error) {
+      console.error("Error al crear agente:", error);
+      res.status(500).json({error: error.message});
+    }
+  });
+});
+

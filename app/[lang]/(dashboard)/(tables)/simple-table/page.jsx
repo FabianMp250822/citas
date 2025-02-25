@@ -19,10 +19,10 @@ import FixedHeader from "./fixed-header";
 const SimpleTablePage = () => {
   return (
     <div className=" space-y-5">
-      <Card title="Basic Table">
+      <Card title="Listado de agentes">
         <BasicTable />
       </Card>
-      <Card title="Striped Rows">
+      {/* <Card title="Striped Rows">
         <StripedRows />
       </Card>
 
@@ -76,7 +76,7 @@ const SimpleTablePage = () => {
 
       <Card title="Fixed Header">
         <FixedHeader />
-      </Card>
+      </Card> */}
     </div>
   );
 };

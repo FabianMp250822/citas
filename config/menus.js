@@ -265,7 +265,7 @@ export const menusConfig = {
     },
 
     {
-      title: "Forms",
+      title: "Agentes",
       icon: Stacks2,
       megaMenu: [
         {
@@ -273,71 +273,7 @@ export const menusConfig = {
           icon: Note,
           child: [
             {
-              title: "autocomplete",
-              href: "/autocomplete",
-            },
-            {
-              title: "checkbox",
-              href: "/checkbox",
-            },
-            {
-              title: "file uploader",
-              href: "/file-uploader",
-            },
-            {
-              title: "input",
-              href: "/input",
-            },
-            {
-              title: "input-group",
-              href: "/input2",
-            },
-            {
-              title: "input-mask",
-              href: "/input-mask",
-            },
-            {
-              title: "radio",
-              href: "/radio",
-            },
-            {
-              title: "Range Slider",
-              href: "/slider",
-            },
-            {
-              title: "rating",
-              href: "/rating",
-            },
-            {
-              title: "Select",
-              href: "/form-select",
-            },
-            {
-              title: "React Select",
-              href: "/react-select",
-            },
-            {
-              title: "switch",
-              href: "/switch",
-            },
-            {
-              title: "textarea",
-              href: "/textarea",
-            },
-            {
-              title: "Form Wizard",
-              href: "/form-wizard",
-            },
-            {
-              title: "Form Layout",
-              href: "/form-layout",
-            },
-            {
-              title: "Use Controller",
-              href: "/validation-controller",
-            },
-            {
-              title: "Use Form",
+              title: "Crear agentes",
               href: "/validation-useform",
             },
           ],
@@ -987,7 +923,7 @@ export const menusConfig = {
         ],
       },
       {
-        title: "Application",
+        title: "Pacientes",
         icon: Application,
         child: [
           {
@@ -996,42 +932,42 @@ export const menusConfig = {
             href: "/chat",
           },
           {
-            title: "email",
+            title: "listado pacientes",
             icon: Envelope,
-            href: "/email",
+            href: "/listado-pacientes",
           },
-          {
-            title: "kanban",
-            icon: Monitor,
-            href: "/kanban",
-          },
-          {
-            title: "task",
-            icon: ListFill,
-            href: "/task",
-          },
+          // {
+          //   title: "kanban",
+          //   icon: Monitor,
+          //   href: "/kanban",
+          // },
+          // {
+          //   title: "task",
+          //   icon: ListFill,
+          //   href: "/task",
+          // },
           {
             title: "calendar",
             icon: Calendar,
             href: "/calendar",
           },
 
-          {
-            title: "project",
-            icon: ClipBoard,
-            nested: [
-              {
-                title: "project List",
-                icon: ClipBoard,
-                href: "/projects",
-              },
-              {
-                title: "project Details",
-                icon: ClipBoard,
-                href: "/projects/1/overview",
-              },
-            ],
-          },
+          // {
+          //   title: "project",
+          //   icon: ClipBoard,
+          //   nested: [
+          //     {
+          //       title: "project List",
+          //       icon: ClipBoard,
+          //       href: "/projects",
+          //     },
+          //     {
+          //       title: "project Details",
+          //       icon: ClipBoard,
+          //       href: "/projects/1/overview",
+          //     },
+          //   ],
+          // },
         ],
       },
       {
@@ -1203,97 +1139,24 @@ export const menusConfig = {
         ],
       },
       {
-        title: "Forms",
+        title: "Agentes",
         icon: Stacks2,
         child: [
+         
           {
-            title: "Form Elements",
-            icon: Note,
-            nested: [
-              {
-                title: "autocomplete",
-                href: "/autocomplete",
-              },
-              {
-                title: "checkbox",
-                href: "/checkbox",
-              },
-              {
-                title: "file uploader",
-                href: "/file-uploader",
-              },
-              {
-                title: "input",
-                href: "/input",
-              },
-              {
-                title: "input-group",
-                href: "/input2",
-              },
-
-              {
-                title: "input-mask",
-                href: "/input-mask",
-              },
-              {
-                title: "radio",
-                href: "/radio",
-              },
-              {
-                title: "Range Slider",
-                href: "/slider",
-              },
-              {
-                title: "rating",
-                href: "/rating",
-              },
-              {
-                title: "select",
-                child: [
-                  {
-                    title: "Select",
-                    href: "/form-select",
-                  },
-                  {
-                    title: "React Select",
-                    href: "/react-select",
-                  },
-                ],
-              },
-              {
-                title: "switch",
-                href: "/switch",
-              },
-              {
-                title: "textarea",
-                href: "/textarea",
-              },
-            ],
-          },
-          {
-            title: "Form Layout",
+           
             icon: ClipBoard2,
-            href: "/form-layout",
+            title: "Crear Agentes",
+            href: "/validation-useform",
           },
           {
-            title: "Form validation",
-            icon: Note2,
-            nested: [
-              {
-                title: "Use Controller",
-                href: "/validation-controller",
-              },
-              {
-                title: "Use Form",
-                href: "/validation-useform",
-              },
-            ],
+           
+            icon: ClipBoard2,
+            title: "listar Agentes",
+            href: "/list-user",
           },
-          {
-            title: "Form Wizard",
-            icon: Note3,
-            href: "/form-wizard",
-          },
+          
+        
         ],
       },
       {

@@ -2,14 +2,7 @@ import { NextResponse } from "next/server";
 
 import { profileUser, contacts, chats } from "./data";
 
-// export async function GET(request, response) {
-//   //console.log(response, "ami resp[osne");
-//   const contactsData = contacts;
 
-//   console.log(contactsData, "ami ami request");
-
-//   return NextResponse.json(contacts, { status: 200 });
-// }
 
 export async function GET(request, response) {
   const contactsData = contacts; // Assuming this fetches all contacts data

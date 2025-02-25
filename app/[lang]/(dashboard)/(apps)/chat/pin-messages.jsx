@@ -20,20 +20,20 @@ const PinnedMessages = ({ pinnedMessages, handleUnpinMessage }) => {
       {pinnedMessages.length > 0 && (
         <div>
           {pinnedMessages.map((msg, i) => (
-            <div key={i} className=" flex justify-center items-center gap-1">
+            <div key={i} className="flex justify-center items-center gap-1">
               <p className="text-center text-xs text-default-700 mb-1">
-                You {msg?.isPinned ? "unpinned" : "pinned"} a message.
+                Usted {msg?.isPinned ? "ha desfijado" : "ha fijado"} un mensaje.
               </p>
               <Dialog>
                 <DialogTrigger asChild>
                   <span className="text-xs font-medium text-primary cursor-pointer inline-block mb-1 hover:underline">
-                    See All
+                    Ver todos
                   </span>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
                     <DialogTitle className="text-center mt-2">
-                      Pinned messages
+                      Mensajes fijados
                     </DialogTitle>
                   </DialogHeader>
                   <DialogDescription className="max-h-[400px]">
@@ -41,7 +41,7 @@ const PinnedMessages = ({ pinnedMessages, handleUnpinMessage }) => {
                       {pinnedMessages.map((pinnedMessage, index) => (
                         <div
                           key={index}
-                          className="flex items-center  gap-3 border-b last:border-none border-default-100 py-4"
+                          className="flex items-center gap-3 border-b last:border-none border-default-100 py-4"
                         >
                           <div className="h-10 w-10 self-end">
                             <Image
@@ -50,14 +50,14 @@ const PinnedMessages = ({ pinnedMessages, handleUnpinMessage }) => {
                               className="w-full h-full rounded-full object-cover"
                             />
                           </div>
-                          <span className="flex-1 ">{pinnedMessage.note}</span>
+                          <span className="flex-1">{pinnedMessage.note}</span>
                           <Badge
                             color="primary"
                             variant="outline"
                             className="px-4 h-7 cursor-pointer self-end"
                             onClick={() => handleUnpinMessage(pinnedMessage)}
                           >
-                            Unpin
+                            Desfijar
                           </Badge>
                         </div>
                       ))}
@@ -65,9 +65,7 @@ const PinnedMessages = ({ pinnedMessages, handleUnpinMessage }) => {
                   </DialogDescription>
                   <DialogFooter className="sm:justify-center">
                     <DialogClose asChild>
-                      <Button className="rounded-full">
-                        Close
-                      </Button>
+                      <Button className="rounded-full">Cerrar</Button>
                     </DialogClose>
                   </DialogFooter>
                 </DialogContent>
