@@ -936,6 +936,22 @@ export const menusConfig = {
             icon: Envelope,
             href: "/listado-pacientes",
           },
+         
+        
+          {
+            title: "calendar",
+            icon: Calendar,
+            href: "/calendar",
+          },
+
+         
+        ],
+      },
+      {
+        title: "Doctores",
+        icon: Components,
+        child: [
+        
           {
             title: "Crear Doctores",
             icon: Envelope,
@@ -947,11 +963,7 @@ export const menusConfig = {
             href: "/listar-doctores",
           },
         
-          {
-            title: "calendar",
-            icon: Calendar,
-            href: "/calendar",
-          },
+         
 
          
         ],
